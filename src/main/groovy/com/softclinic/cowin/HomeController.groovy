@@ -1,5 +1,6 @@
 package com.softclinic.cowin
 
+
 import com.softclinic.cowin.domain.Alert
 import com.softclinic.cowin.dto.AlertCommand
 import com.softclinic.cowin.dto.StateDTO
@@ -29,15 +30,13 @@ class HomeController {
     @View("home")
     @Get("/")
     public HttpResponse index() {
-        List<StateDTO> stateDTOS = cowinApiClient.fetchStates().states
-        return HttpResponse.ok(CollectionUtils.mapOf("stateDTOS", stateDTOS, "username", "sdelamo"))
+        return HttpResponse.ok(CollectionUtils.mapOf("stateDTOS", states, "username", "sdelamo"))
     }
 
     @View("watcher")
     @Get("/watcher")
     public HttpResponse watcher() {
-        List<StateDTO> stateDTOS = cowinApiClient.fetchStates().states
-        return HttpResponse.ok(CollectionUtils.mapOf("stateDTOS", stateDTOS, "username", "sdelamo"))
+        return HttpResponse.ok(CollectionUtils.mapOf("stateDTOS", states, "username", "sdelamo"))
     }
 
     @Get(uri = "/state/{id}", produces = MediaType.APPLICATION_JSON)
@@ -74,7 +73,7 @@ class HomeController {
     }
 
     @Get(uri = "/availableSlots/{id}/{vaccine}", produces = MediaType.APPLICATION_JSON)
-    public List<Map> getCentersWithAvailableSlots(Integer id,String vaccine) {
+    public List<Map> getCentersWithAvailableSlots(Integer id, String vaccine) {
         cowinApiClient.fetchCenters(id, new SimpleDateFormat("dd-MM-yyyy").format(new Date())).centers.findAll {
             it.sessions.any {
                 it.vaccine == vaccine && it.available_capacity > 5 && it.min_age_limit == 18
@@ -95,6 +94,15 @@ class HomeController {
     @Error(exception = org.hibernate.exception.ConstraintViolationException.class)
     public HttpResponse handleAlreadySubscribed(HttpRequest<AlertCommand> request, org.hibernate.exception.ConstraintViolationException cv) {
         return index()
+    }
+
+    private List<StateDTO> getStates() {
+        if (System.getProperty('local')) {
+            return cowinApiClient.fetchStates().states
+        } else {
+            return Utils.cachedStates
+        }
+
     }
 
 
