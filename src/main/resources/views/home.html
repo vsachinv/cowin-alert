@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CO-Win Alert</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+</head>
+<body>
+<div class="container my-3">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <h2>CO-Win Voice/Email Alert for 18+ slots
+                <small class="text-sm-left"><a href="/watcher">Live</a></small>
+            </h2>
+            <form th:action="@{/subscribe}" method="post">
+                <div class="form-row">
+                    <div class="col-md-6 form-group">
+                        <label>State</label>
+                        <select class="form-control select2box" name="state" id="state" required>
+                            <option value="0">Choose...</option>
+                            <option th:each="state : ${stateDTOS}" th:value="${state.state_id}"
+                                    th:text="${state.state_name}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label>District</label>
+                        <select class="form-control select2box" name="districtId" id="districtId" required>
+                        </select>
+                    </div>
+
+                    <div class="col-md-8 form-group">
+                        <strong>Vaccine</strong>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" id="COVISHIELD" value="COVISHIELD"
+                                   name="vaccineType" checked>
+                            <label class="form-check-label" for="COVISHIELD">COVISHIELD</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" id="COVAXIN" name="vaccineType"
+                                   value="COVAXIN">
+                            <label class="form-check-label" for="COVAXIN">COVAXIN</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" id="SPUTNIKV" name="vaccineType"
+                                   value="SPUTNIKV">
+                            <label class="form-check-label" for="SPUTNIKV">SPUTNIKV</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 form-group">
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label>Mobile No</label>
+                        <input type="number" class="form-control" name="mobileNo" id="mobileNo"
+                               pattern="[7-9]{1}[0-9]{9}" required/>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label>Email</label>
+                        <input type="email" class="form-control" name="emailId" id="emailId" required/>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block mt-3">Subscribe</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+    $(function () {
+        var apiUrl = '/state/:parentId:';
+        $("#districtId").prop('disabled', true);
+        $('#state').on('change', function () {
+            $("#districtId").html('');
+            $.getJSON(apiUrl.replace(':parentId:', $(this).val()), function (items) {
+                if (items.length > 0) {
+                    var newOptions = '<option value="">-- Select --</option>';
+                    for (var i in items) {
+                        newOptions += '<option value="' + items[i].id + '">' + items[i].text + '</option>';
+                    }
+                    $("#districtId").html(newOptions).prop("disabled", false)
+                } else {
+                    $("#districtId").prop('disabled', true);
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

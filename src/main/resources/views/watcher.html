@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Co-Win Watcher</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <style>
+        /* Pulse class and keyframe animation */
+        .pulseit {
+            -webkit-animation: pulse linear .5s infinite;
+            animation: pulse linear .5s infinite;
+        }
+
+        @-webkit-keyframes pulse {
+            0% {
+                width: 200px;
+            }
+            50% {
+                width: 340px;
+            }
+            100% {
+                width: 200px;
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                width: 200px;
+            }
+            50% {
+                width: 340px;
+            }
+            100% {
+                width: 200px;
+            }
+        }
+    </style>
+
+</head>
+<body>
+<div class="container my-3">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <h2>CO-Win Live Watcher
+                <small class="text-sm-left"><a href="/">Subscribe</a></small>
+            </h2>
+            <div class="form-row">
+                <div class="col-md-6 form-group">
+                    <label>State</label>
+                    <select class="form-control select2box" name="state" id="state" required>
+                        <option value="0">Choose...</option>
+                        <option th:each="state : ${stateDTOS}" th:value="${state.state_id}"
+                                th:text="${state.state_name}">
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label>District</label>
+                    <select class="form-control select2box" name="districtId" id="districtId" required>
+                    </select>
+                </div>
+
+                <div class="col-md-8 form-group">
+                    <strong>Vaccine</strong>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="COVISHIELD" value="COVISHIELD"
+                               name="vaccineType" checked>
+                        <label class="form-check-label" for="COVISHIELD">COVISHIELD</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="COVAXIN" name="vaccineType"
+                               value="COVAXIN">
+                        <label class="form-check-label" for="COVAXIN">COVAXIN</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="SPUTNIKV" name="vaccineType"
+                               value="SPUTNIKV">
+                        <label class="form-check-label" for="SPUTNIKV">SPUTNIKV</label>
+                    </div>
+                </div>
+                <div class="col-md-4 form-group">
+                </div>
+                <div class="col-md-6 form-group">
+                    <strong>Age Group</strong>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" value="18" id="18plus"
+                               name="ageLimit" checked>
+                        <label class="form-check-label" for="18plus">18-45</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="ageLimit" id="45plus"
+                               value="45">
+                        <label class="form-check-label" for="45plus">45+</label>
+                    </div>
+                </div>
+                <div class="col-md-6 form-group">
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-md-4 col-form-label">Fetch Interval</label>
+                        <div class="col-md-3">
+                            <input name="refreshInterval" id="refreshInterval" type="number" value="4"
+                                   min="1" class="form-control"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                </div>
+
+            </div>
+            <button type="button" class="btn btn-primary btn-block mt-3" id="watch">Watch</button>
+        </div>
+    </div>
+    <br/>
+    <br/>
+    <div class="row invisible" id="result">
+        <div class="col-md-8 mx-auto">
+            <h3>Finding Centers
+                <small><a href="#" id="cancelWatch">Cancel</a></small>
+            </h3>
+            <div id="centers"></div>
+            <div class="flasher invisible"><a href="https://www.cowin.gov.in/home"><img class="pulseit"
+                                                                                        src="https://1.bp.blogspot.com/-zX3zrO0f6Ic/TbjHt6yP8UI/AAAAAAAAEBE/5wIGOgLUKJ0/s1600/pawan+gren+logo.gif"
+                                                                                        alt="Attention Please"/></a>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <br/>
+    <div id="jquery_jplayer_1"></div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="http://jplayer.org/latest/dist/jplayer/jquery.jplayer.min.js"></script>
+<script>
+    $(function () {
+        var timerId = 0;
+        $("#jquery_jplayer_1").jPlayer({
+            ready: function (event) {
+                $(this).jPlayer("setMedia", {
+                    title: "Bubble",
+                    m4a: "http://jplayer.org/audio/mp3/Miaow-07-Bubble.mp3",
+                    oga: "http://jplayer.org/audio/ogg/Miaow-07-Bubble.ogg"
+                });
+            },
+            swfPath: "http://jplayer.org/latest/dist/jplayer",
+            supplied: "mp3, oga",
+            wmode: "window",
+            useStateClassSkin: true,
+            autoBlur: false,
+            smoothPlayBar: true,
+            keyEnabled: true,
+            remainingDuration: true,
+            toggleDuration: true
+        });
+
+        var apiUrl = '/state/:parentId:';
+        $("#districtId").prop('disabled', true);
+        $('#state').on('change', function () {
+            $("#districtId").html('');
+            $.getJSON(apiUrl.replace(':parentId:', $(this).val()), function (items) {
+                if (items.length > 0) {
+                    var newOptions = '<option value="">-- Select --</option>';
+                    for (var i in items) {
+                        newOptions += '<option value="' + items[i].id + '">' + items[i].text + '</option>';
+                    }
+                    $("#districtId").html(newOptions).prop("disabled", false)
+                } else {
+                    $("#districtId").prop('disabled', true);
+                }
+            });
+        });
+
+        $('#cancelWatch').on('click', function () {
+            clearInterval(timerId);
+            $('#watch').prop('disabled', false);
+            $('#result').addClass('invisible');
+            $('.flasher').addClass('invisible');
+            $('#centers').html('');
+            $("#jquery_jplayer_1").jPlayer("stop");
+        });
+
+        $('#watch').on('click', function () {
+            var districtId = $('#districtId').val();
+            var vaccineType = $('input[name=vaccineType]:checked').val();
+            var ageLimit = $('input[name=ageLimit]:checked').val();
+            var refreshInterval = $('input[name=refreshInterval]').val();
+            if (!districtId || !vaccineType || !ageLimit || !refreshInterval) {
+                alert('Please enter input');
+                return
+            }
+            $(this).prop('disabled', true);
+            $('#result').removeClass('invisible');
+            timerId = setInterval(function () {
+                // var apiUrl = '/availableSlots/:districtId:/:vaccineType:';
+                // $.getJSON(apiUrl.replace(':districtId:', districtId).replace(':vaccineType:', vaccineType), function (items) {
+                //     var centersNames = '';
+                //     for (var i in items) {
+                //         centersNames += items[i].center + '<br/>';
+                //     }
+                //     $('#centers').html(centersNames);
+                //     if (centersNames) {
+                //         $('.flasher').removeClass('invisible');
+                //         $("#jquery_jplayer_1").jPlayer("play", 2);
+                //     } else {
+                //         $('.flasher').addClass('invisible');
+                //         $("#jquery_jplayer_1").jPlayer("stop");
+                //     }
+                // })
+                cowinCoriApiSearch(districtId, vaccineType, ageLimit);
+            }, 1000 * 60 * refreshInterval);
+
+        });
+
+        var currentDate = function () {
+            var d = new Date(),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2)
+                month = '0' + month;
+            if (day.length < 2)
+                day = '0' + day;
+
+            return [day, month, year].join('-');
+        };
+
+        var cowinCoriApiSearch = function (districtId, vaccineType, ageLimit) {
+            var apiUrl = 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=:districtId:&date=:DATE:';
+
+            $.getJSON(apiUrl.replace(':districtId:', districtId).replace(':DATE:', currentDate()), function (data) {
+                var centersNames = '';
+                $.each(data.centers, function (index, element) {
+                    var sessions = $.grep(element.sessions, function (it, j) {
+                        if (it.vaccine == vaccineType && it.available_capacity > 5 && it.min_age_limit == ageLimit) {
+                            return true
+                        }
+                        return false
+                    });
+
+                    if (sessions.length > 0) {
+                        centersNames += element.name + '<br/>';
+                    }
+
+                });
+                $('#centers').html(centersNames);
+                if (centersNames) {
+                    $('.flasher').removeClass('invisible');
+                    $("#jquery_jplayer_1").jPlayer("play", 2);
+                } else {
+                    $('.flasher').addClass('invisible');
+                    $("#jquery_jplayer_1").jPlayer("stop");
+                }
+            })
+        };
+
+
+    });
+</script>
+</body>
+</html>
