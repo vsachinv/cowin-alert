@@ -1,6 +1,12 @@
 micronaut:
   application:
     name: cowinAlert
+  router:
+    static-resources:
+      default:
+        enabled: true
+        mapping: "/public/**"
+        paths: "classpath:public"
 jpa:
   default:
     packages-to-scan:
