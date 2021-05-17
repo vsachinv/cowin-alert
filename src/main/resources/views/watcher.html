@@ -249,6 +249,8 @@
                 if (centersNames) {
                     $('.flasher').removeClass('invisible');
                     $("#jquery_jplayer_1").jPlayer("play", 2);
+                    console.log("Found At " + new Date());
+                    console.log(centersNames);
                 } else {
                     $('.flasher').addClass('invisible');
                     $("#jquery_jplayer_1").jPlayer("stop");
