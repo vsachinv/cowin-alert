@@ -85,7 +85,7 @@ $(function () {
             var newFoundCenters = '';
             $.each(data.centers, function (index, element) {
                 var sessions = $.grep(element.sessions, function (it, j) {
-                    if ((vaccineType == 'ANY' || it.vaccine == vaccineType) && it.available_capacity > 5 && it.min_age_limit == ageLimit) {
+                    if ((vaccineType == 'ANY' || it.vaccine == vaccineType) && it.available_capacity > 2 && it.min_age_limit == ageLimit) {
                         return true
                     }
                     return false
