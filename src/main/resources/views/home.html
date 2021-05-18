@@ -72,26 +72,6 @@
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<script>
-    $(function () {
-        var apiUrl = 'https://cdn-api.co-vin.in/api/v2/admin/location/districts/:parentId:';
-        $("#districtId").prop('disabled', true);
-        $('#state').on('change', function () {
-            $("#districtId").html('');
-            $.getJSON(apiUrl.replace(':parentId:', $(this).val()), function (data) {
-                var items = data.districts;
-                if (items.length > 0) {
-                    var newOptions = '<option value="">-- Select --</option>';
-                    for (var i in items) {
-                        newOptions += '<option value="' + items[i].district_id + '">' + items[i].district_name + '</option>';
-                    }
-                    $("#districtId").html(newOptions).prop("disabled", false)
-                } else {
-                    $("#districtId").prop('disabled', true);
-                }
-            });
-        });
-    });
-</script>
+<script src="/public/app/subcribe.js"></script>
 </body>
 </html>

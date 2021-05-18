@@ -61,7 +61,7 @@
                     </select>
                 </div>
 
-                <div class="col-md-8 form-group">
+                <div class="col-md-12 form-group">
                     <strong>Vaccine</strong>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" id="COVISHIELD" value="COVISHIELD"
@@ -78,15 +78,18 @@
                                value="SPUTNIKV">
                         <label class="form-check-label" for="SPUTNIKV">SPUTNIKV</label>
                     </div>
-                </div>
-                <div class="col-md-4 form-group">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="ANY" name="vaccineType"
+                               value="ANY">
+                        <label class="form-check-label" for="ANY">Any of these</label>
+                    </div>
                 </div>
                 <div class="col-md-6 form-group">
                     <strong>Age Group</strong>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" value="18" id="18plus"
                                name="ageLimit" checked>
-                        <label class="form-check-label" for="18plus">18-45</label>
+                        <label class="form-check-label" for="18plus">18-44</label>
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="ageLimit" id="45plus"
@@ -126,7 +129,7 @@
             </h3>
             <div id="centers"></div>
             <div class="flasher invisible"><a href="https://www.cowin.gov.in/home"><img class="pulseit"
-                                                                                        src="https://1.bp.blogspot.com/-zX3zrO0f6Ic/TbjHt6yP8UI/AAAAAAAAEBE/5wIGOgLUKJ0/s1600/pawan+gren+logo.gif"
+                                                                                        src="https://media.giphy.com/media/eImrJKnOmuBDmqXNUj/source.gif"
                                                                                         alt="Attention Please"/></a>
             </div>
         </div>
@@ -138,134 +141,6 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="/public/jplayer/jquery.jplayer.min.js"></script>
-<script>
-    $(function () {
-        var timerId = 0;
-        $("#jquery_jplayer_1").jPlayer({
-            ready: function (event) {
-                $(this).jPlayer("setMedia", {
-                    title: "Bubble",
-                    m4a: "http://jplayer.org/audio/mp3/Miaow-07-Bubble.mp3",
-                    oga: "http://jplayer.org/audio/ogg/Miaow-07-Bubble.ogg"
-                });
-            },
-            swfPath: "http://jplayer.org/latest/dist/jplayer",
-            supplied: "mp3, oga",
-            wmode: "window",
-            useStateClassSkin: true,
-            autoBlur: false,
-            smoothPlayBar: true,
-            keyEnabled: true,
-            remainingDuration: true,
-            toggleDuration: true
-        });
-
-        var apiUrl = 'https://cdn-api.co-vin.in/api/v2/admin/location/districts/:parentId:';
-        $("#districtId").prop('disabled', true);
-        $('#state').on('change', function () {
-            $("#districtId").html('');
-            $.getJSON(apiUrl.replace(':parentId:', $(this).val()), function (data) {
-                var items = data.districts;
-                if (items.length > 0) {
-                    var newOptions = '<option value="">-- Select --</option>';
-                    for (var i in items) {
-                        newOptions += '<option value="' + items[i].district_id + '">' + items[i].district_name + '</option>';
-                    }
-                    $("#districtId").html(newOptions).prop("disabled", false)
-                } else {
-                    $("#districtId").prop('disabled', true);
-                }
-            });
-        });
-
-        $('#cancelWatch').on('click', function () {
-            clearInterval(timerId);
-            $('#watch').prop('disabled', false);
-            $('#result').addClass('invisible');
-            $('.flasher').addClass('invisible');
-            $('#centers').html('');
-            $("#jquery_jplayer_1").jPlayer("stop");
-        });
-
-        $('#watch').on('click', function () {
-            var districtId = $('#districtId').val();
-            var vaccineType = $('input[name=vaccineType]:checked').val();
-            var ageLimit = $('input[name=ageLimit]:checked').val();
-            var refreshInterval = $('input[name=refreshInterval]').val();
-            if (!districtId || !vaccineType || !ageLimit || !refreshInterval) {
-                alert('Please enter input');
-                return
-            }
-            $(this).prop('disabled', true);
-            $('#result').removeClass('invisible');
-            timerId = setInterval(function () {
-                // var apiUrl = '/availableSlots/:districtId:/:vaccineType:';
-                // $.getJSON(apiUrl.replace(':districtId:', districtId).replace(':vaccineType:', vaccineType), function (items) {
-                //     var centersNames = '';
-                //     for (var i in items) {
-                //         centersNames += items[i].center + '<br/>';
-                //     }
-                //     $('#centers').html(centersNames);
-                //     if (centersNames) {
-                //         $('.flasher').removeClass('invisible');
-                //         $("#jquery_jplayer_1").jPlayer("play", 2);
-                //     } else {
-                //         $('.flasher').addClass('invisible');
-                //         $("#jquery_jplayer_1").jPlayer("stop");
-                //     }
-                // })
-                cowinCoriApiSearch(districtId, vaccineType, ageLimit);
-            }, 1000 * 60 * refreshInterval);
-
-        });
-
-        var currentDate = function () {
-            var d = new Date(),
-                month = '' + (d.getMonth() + 1),
-                day = '' + d.getDate(),
-                year = d.getFullYear();
-
-            if (month.length < 2)
-                month = '0' + month;
-            if (day.length < 2)
-                day = '0' + day;
-
-            return [day, month, year].join('-');
-        };
-
-        var cowinCoriApiSearch = function (districtId, vaccineType, ageLimit) {
-            var apiUrl = 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=:districtId:&date=:DATE:';
-
-            $.getJSON(apiUrl.replace(':districtId:', districtId).replace(':DATE:', currentDate()), function (data) {
-                var centersNames = '';
-                $.each(data.centers, function (index, element) {
-                    var sessions = $.grep(element.sessions, function (it, j) {
-                        if (it.vaccine == vaccineType && it.available_capacity > 5 && it.min_age_limit == ageLimit) {
-                            return true
-                        }
-                        return false
-                    });
-
-                    if (sessions.length > 0) {
-                        centersNames += element.name + '<br/>';
-                    }
-
-                });
-                $('#centers').html(centersNames);
-                if (centersNames) {
-                    $('.flasher').removeClass('invisible');
-                    $("#jquery_jplayer_1").jPlayer("play", 2);
-                    console.log("Found At " + new Date());
-                    console.log(centersNames);
-                } else {
-                    $('.flasher').addClass('invisible');
-                    $("#jquery_jplayer_1").jPlayer("stop");
-                }
-            })
-        };
-
-
-    });
-</script>
+<script src="/public/app/watcher.js"></script>
 </body>
 </html>
