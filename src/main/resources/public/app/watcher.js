@@ -99,8 +99,9 @@ $(function () {
             });
             if (newFoundCenters) {
                 newFoundCenters = '<b>Found At :</b>' + new Date() + '<br/>' + newFoundCenters + '<br/>';
+                centersNames = newFoundCenters + centersNames;
             }
-            $('#centers').html(newFoundCenters + centersNames);
+            $('#centers').html(centersNames);
             if (newFoundCenters) {
                 $('.flasher').removeClass('invisible');
                 $("#jquery_jplayer_1").jPlayer("play", 2);
