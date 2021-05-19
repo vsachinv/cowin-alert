@@ -94,6 +94,9 @@ $(function () {
 
                 if (sessions.length > 0) {
                     newFoundCenters += element.name + '<br/>';
+                    $.each(sessions, function (k, sessionObj) {
+                        newFoundCenters += sessionObj.date + ' : available ' + (doseType == 'FIRST' ? (sessionObj.available_capacity_dose1) : (sessionObj.available_capacity_dose2)) + '<br/>'
+                    });
                 }
 
             });
